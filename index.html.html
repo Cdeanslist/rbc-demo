@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RBC · Client record · Amira Al-Fardan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#213343; --navy-2:#33475b; --slate:#516f90; --grey:#cbd6e2;
+    --line:#dfe3eb; --bg:#f5f8fa; --white:#fff;
+    --orange:#ff5c35; --orange-soft:#fff3ef;
+    --teal:#00bda5; --teal-soft:#e5f8f5;
+    --purple:#6a5acd; --amber:#f5c26b; --red:#b03a3a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Lexend Deca',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--bg); color:var(--navy); font-size:14px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  :focus-visible{outline:2px solid var(--orange);outline-offset:2px;border-radius:3px}
+
+  /* ---------- top nav ---------- */
+  .nav{background:var(--navy);color:#fff;display:flex;align-items:center;gap:26px;padding:0 22px;height:52px;position:sticky;top:0;z-index:20}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:-.2px}
+  .sprocket{width:20px;height:20px;border:2.5px solid var(--orange);border-radius:50%;position:relative}
+  .sprocket::after{content:"";position:absolute;top:-7px;left:50%;width:2.5px;height:7px;background:var(--orange)}
+  .nav a{color:#c3cfdb;text-decoration:none;font-size:13.5px;padding:4px 0;border-bottom:2px solid transparent}
+  .nav a.on{color:#fff;border-color:var(--orange)}
+  .nav .right{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12.5px;color:#8fa3b8}
+  .avatar-sm{width:26px;height:26px;border-radius:50%;background:var(--orange);display:grid;place-items:center;font-size:11px;font-weight:600;color:#fff}
+
+  /* ---------- mode switch ---------- */
+  .modebar{background:var(--white);border-bottom:1px solid var(--line);padding:11px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .switch{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:3px;gap:3px}
+  .switch button{padding:7px 15px;border-radius:5px;font-size:12.5px;font-weight:600;color:var(--slate);transition:.18s}
+  .switch button[aria-pressed="true"]{background:var(--navy);color:#fff}
+  .modenote{font-size:12.5px;color:var(--slate)}
+  .modenote b{color:var(--navy)}
+  .siloed .modenote b{color:var(--red)}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:1500px;margin:0 auto;padding:18px 22px 60px;display:grid;grid-template-columns:296px minmax(0,1fr) 292px;gap:18px;align-items:start}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:9px}
+  .card h3{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--slate);font-weight:600;padding:14px 16px 0}
+
+  /* ---------- left ---------- */
+  .ident{padding:20px 16px 16px;text-align:center;border-bottom:1px solid var(--line)}
+  .avatar{width:66px;height:66px;border-radius:50%;background:linear-gradient(140deg,var(--orange),#ff8f6b);margin:0 auto 11px;display:grid;place-items:center;color:#fff;font-size:22px;font-weight:600}
+  .ident h1{font-size:19px;font-weight:600;letter-spacing:-.3px}
+  .ident p{font-size:12.5px;color:var(--slate);margin-top:2px}
+  .tier{display:inline-block;margin-top:9px;background:var(--orange-soft);color:var(--orange);border:1px solid #ffd4c7;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:600}
+  .props{padding:6px 16px 16px}
+  .prop{padding:11px 0;border-bottom:1px solid #eef1f5}
+  .prop:last-child{border:none}
+  .prop dt{font-size:11px;color:var(--slate);margin-bottom:2px}
+  .prop dd{font-size:13.5px;font-weight:500}
+  .redacted{color:var(--slate);font-style:italic;font-weight:400;font-size:12.5px}
+
+  /* ---------- centre ---------- */
+  .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px}
+  .tabs button{padding:14px 14px 12px;font-size:13.5px;color:var(--slate);border-bottom:2.5px solid transparent;font-weight:500}
+  .tabs button[aria-selected="true"]{color:var(--navy);border-color:var(--orange);font-weight:600}
+  .pane{padding:18px 16px 20px}
+  .pane[hidden]{display:none}
+
+  .totals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+  .tot{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:13px 14px}
+  .tot .lab{font-size:11px;color:var(--slate)}
+  .tot .val{font-size:23px;font-weight:600;letter-spacing:-.6px;margin-top:3px;font-variant-numeric:tabular-nums}
+  .tot .sub{font-size:11px;color:var(--teal);font-weight:500;margin-top:2px}
+
+  .secttl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--slate);font-weight:600;margin:0 0 11px}
+
+  .venture{border:1px solid var(--line);border-radius:9px;margin-bottom:11px;overflow:hidden;transition:.2s}
+  .venture.home{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
+  .vhead{display:flex;align-items:center;gap:12px;padding:13px 15px;background:var(--white);width:100%;text-align:left}
+  .flag{width:34px;height:26px;border-radius:4px;display:grid;place-items:center;font-size:10.5px;font-weight:700;color:#fff;background:var(--navy-2);letter-spacing:.4px;flex:none}
+  .venture.home .flag{background:var(--orange)}
+  .vname{font-weight:600;font-size:14px}
+  .vmeta{font-size:11.5px;color:var(--slate)}
+  .vval{margin-left:auto;text-align:right;font-variant-numeric:tabular-nums}
+  .vval .n{font-weight:600;font-size:14px}
+  .vval .c{font-size:11px;color:var(--slate)}
+  .chev{margin-left:11px;color:var(--slate);transition:.2s;font-size:11px;flex:none}
+  .venture.open .chev{transform:rotate(180deg)}
+  .vbody{display:none;border-top:1px solid var(--line);background:#fafbfc;padding:5px 15px 12px}
+  .venture.open .vbody{display:block}
+  .prod{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid #eef1f5;font-size:13px}
+  .prod:last-child{border:none}
+  .dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .prod .nm{font-weight:500}
+  .prod .ent{font-size:11px;color:var(--slate)}
+  .prod .amt{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+  .pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--teal-soft);color:#00806f}
+  .pill.open{background:#fff6e5;color:#a06a00}
+
+  .hidden-note{border:1px dashed var(--red);background:#fdf3f3;border-radius:9px;padding:15px;text-align:center;color:var(--red);font-size:13px;margin-bottom:11px}
+  .hidden-note b{display:block;font-size:14px;margin-bottom:3px}
+
+  .flag-alert{display:flex;gap:11px;align-items:flex-start;background:var(--orange-soft);border:1px solid #ffd4c7;border-radius:9px;padding:14px 15px;margin-top:18px}
+  .flag-alert .ico{width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+  .flag-alert h4{font-size:13.5px;margin-bottom:3px}
+  .flag-alert p{font-size:12.5px;color:var(--navy-2)}
+
+  /* activity */
+  .ev{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid #eef1f5}
+  .ev:last-child{border:none}
+  .bar{width:3px;border-radius:2px;flex:none}
+  .ev .k{font-size:10px;letter-spacing:.7px;text-transform:uppercase;font-weight:600}
+  .ev .t{font-size:13.5px;margin-top:2px}
+  .ev .m{font-size:11.5px;color:var(--slate);margin-top:2px}
+
+  /* ---------- right ---------- */
+  .assoc{padding:6px 14px 14px}
+  .arow{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #eef1f5}
+  .arow:last-child{border:none}
+  .aic{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex:none}
+  .arow .n{font-size:13px;font-weight:500}
+  .arow .r{font-size:11px;color:var(--orange);font-weight:500}
+  .legendnote{padding:12px 16px 16px;font-size:11.5px;color:var(--slate);border-top:1px solid var(--line);line-height:1.6}
+
+  /* ---------- AI panel ---------- */
+  .ai{border:1px solid #d7cffa;border-radius:10px;background:linear-gradient(180deg,#f7f5ff 0%,#fff 62%);padding:15px 16px;margin-bottom:18px}
+  .ai-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .spark{width:22px;height:22px;flex:none;display:grid;place-items:center;border-radius:6px;background:linear-gradient(135deg,var(--purple),#9b7fe6);color:#fff;font-size:12px}
+  .ai-top .lbl{font-size:10.5px;letter-spacing:.9px;text-transform:uppercase;font-weight:600;color:var(--purple)}
+  .conf{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--slate)}
+  .meter{width:62px;height:5px;border-radius:3px;background:#e7e2f8;overflow:hidden}
+  .meter i{display:block;height:100%;width:84%;background:var(--purple)}
+  .ai h4{font-size:16px;font-weight:600;letter-spacing:-.2px}
+  .ai .venturetag{display:inline-block;font-size:10.5px;font-weight:600;color:#fff;background:var(--navy-2);border-radius:4px;padding:2px 7px;margin-right:7px;vertical-align:2px}
+  .ai .why{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--slate);font-weight:600;margin:12px 0 7px}
+  .signals{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .sig{background:#fff;border:1px solid #e6e1f7;border-radius:7px;padding:10px 11px}
+  .sig .src{font-size:10px;font-weight:600;color:var(--purple);letter-spacing:.5px;text-transform:uppercase}
+  .sig p{font-size:12px;margin-top:3px;line-height:1.45}
+  .ai-actions{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}
+  .ai-actions button{font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:6px}
+  .btn-p{background:var(--purple);color:#fff}
+  .btn-s{border:1px solid var(--grey);color:var(--navy-2);background:#fff}
+  .ai-note{font-size:11.5px;color:var(--slate);margin-top:10px;font-style:italic}
+  .ai-blocked{border:1px dashed var(--red);background:#fdf3f3;border-radius:10px;padding:15px 16px;margin-bottom:18px;font-size:13px;color:var(--red)}
+  .ai-blocked b{display:block;font-size:14px;margin-bottom:3px}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);background:var(--navy);color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:40}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media(max-width:760px){.signals{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  .siloed .cross{display:none}
+  .siloed .flag-alert{display:none}
+  .crossonly{display:none}
+  .siloed .crossonly{display:block}
+
+  @media(max-width:1180px){.wrap{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="logo"><span class="sprocket"></span> RBC Global</span>
+  <a href="#">Contacts</a><a href="#" class="on">Records</a><a href="#">Sales</a>
+  <a href="#">Marketing</a><a href="#">Service</a><a href="#">Reports</a>
+  <span class="right"><span>Wellspent · Emirates · Cape</span><span class="avatar-sm">RM</span></span>
+</nav>
+
+<div class="modebar" id="modebar">
+  <div class="switch" role="group" aria-label="Record view">
+    <button id="btnToday" aria-pressed="false">Today · separate systems</button>
+    <button id="btnGlobal" aria-pressed="true">One operating model</button>
+  </div>
+  <p class="modenote" id="modenote"><b>All ventures visible.</b> One record, every relationship, every product.</p>
+</div>
+
+<div class="wrap">
+
+  <!-- LEFT -->
+  <aside class="card">
+    <div class="ident">
+      <div class="avatar">AA</div>
+      <h1>Amira Al-Fardan</h1>
+      <p>Private banking · Dubai, UAE</p>
+      <span class="tier">Tier 1 relationship</span>
+    </div>
+    <dl class="props">
+      <div class="prop"><dt>Relationship owner</dt><dd>H. Nasser · Emirates Venture</dd></div>
+      <div class="prop"><dt>Client since</dt><dd>March 2011</dd></div>
+      <div class="prop"><dt>Consent status</dt><dd>Opted in · DIFC</dd></div>
+      <div class="prop"><dt>Ventures</dt>
+        <dd class="cross">Emirates · Cape · Wellspent</dd>
+        <dd class="crossonly">Emirates</dd></div>
+      <div class="prop"><dt>Account details</dt><dd class="redacted">Held in core banking. Not stored here.</dd></div>
+    </dl>
+  </aside>
+
+  <!-- CENTRE -->
+  <main class="card">
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-pane="p1">Ventures &amp; products</button>
+      <button role="tab" aria-selected="false" data-pane="p2">Activity</button>
+    </div>
+
+    <section class="pane" id="p1" role="tabpanel">
+
+      <div class="ai cross">
+        <div class="ai-top">
+          <span class="spark">✦</span>
+          <span class="lbl">Suggested next product</span>
+          <span class="conf">Confidence <span class="meter"><i></i></span> High</span>
+        </div>
+        <h4><span class="venturetag">WELLSPENT · UK</span>Cross-border succession planning</h4>
+        <p class="why">Why this client</p>
+        <div class="signals">
+          <div class="sig"><span class="src">Emirates · UAE</span>
+            <p>$9.6M held personally and through the holding company, with no succession instrument attached.</p></div>
+          <div class="sig"><span class="src">Cape · South Africa</span>
+            <p>Trustee of a family trust administered in a third jurisdiction.</p></div>
+          <div class="sig"><span class="src">Wellspent · UK</span>
+            <p>Advisory mandate already in place. 7 comparable multi-jurisdiction clients converted in 18 months.</p></div>
+        </div>
+        <div class="ai-actions">
+          <button class="btn-p" data-toast="Task created for H. Nasser · Emirates Venture">Create task for relationship owner</button>
+          <button class="btn-s" data-toast="Introduction drafted to Wellspent advisory team">Draft introduction to Wellspent</button>
+          <button class="btn-s" data-toast="Suggestion dismissed. Not surfaced again for 90 days.">Dismiss</button>
+        </div>
+        <p class="ai-note">Assets across three jurisdictions and a trust structure spanning two more. This pattern is only visible because all three ventures share one record.</p>
+      </div>
+
+      <div class="ai-blocked crossonly">
+        <b>No suggestion available</b>
+        The signals for this client sit in two ventures this system cannot see. From here she looks like a single-market private banking client.
+      </div>
+
+      <div class="totals">
+        <div class="tot"><div class="lab">Total relationship value</div><div class="val" id="tot-val">$14.2M</div><div class="sub" id="tot-sub">Across 3 ventures</div></div>
+        <div class="tot"><div class="lab">Products held</div><div class="val" id="tot-prod">6</div><div class="sub" id="tot-prodsub">In 3 countries</div></div>
+        <div class="tot"><div class="lab">Open opportunities</div><div class="val" id="tot-opp">2</div><div class="sub" id="tot-oppsub">$1.4M weighted</div></div>
+      </div>
+
+      <p class="secttl">Connected ventures</p>
+
+      <!-- UAE -->
+      <div class="venture home open" data-v="ae">
+        <button class="vhead" aria-expanded="true">
+          <span class="flag">UAE</span>
+          <span><span class="vname">Emirates Venture</span><br><span class="vmeta">Private banking · home venture</span></span>
+          <span class="vval"><span class="n">$9.6M</span><br><span class="c">3 products</span></span>
+          <span class="chev">▼</span>
+        </button>
+        <div class="vbody">
+          <div class="prod"><span class="dot" style="background:var(--teal)"></span>
+            <span><span class="nm">Private banking account</span><br><span class="ent">Personal · since 2011</span></span>
+            <span class="amt">$6.1M</span><span class="pill">Active</span></div>
+          <div class="prod"><span class="dot" style="background:var(--teal)"></span>
+            <span><span class="nm">Mobile FX</span><br><span class="ent">Personal · since 2023</span></span>
+            <span class="amt">$0.4M</span><span class="pill">Active</span></div>
+          <div class="prod"><span class="dot" style="background:var(--purple)"></span>
+            <span><span class="nm">Commercial lending</span><br><span class="ent">Al-Fardan Holding LLC</span></span>
+            <span class="amt">$3.1M</span><span class="pill">Active</span></div>
+        </div>
+      </div>
+
+      <!-- South Africa -->
+      <div class="venture cross" data-v="za">
+        <button class="vhead" aria-expanded="false">
+          <span class="flag">ZA</span>
+          <span><span class="vname">Cape Financial</span><br><span class="vmeta">Trust &amp; fiduciary services</span></span>
+          <span class="vval"><span class="n">$3.4M</span><br><span class="c">2 products</span></span>
+          <span class="chev">▼</span>
+        </button>
+        <div class="vbody">
+          <div class="prod"><span class="dot" style="background:var(--amber)"></span>
+            <span><span class="nm">Family trust administration</span><br><span class="ent">Al-Fardan Family Trust · trustee</span></span>
+            <span class="amt">$3.4M</span><span class="pill">Active</span></div>
+          <div class="prod"><span class="dot" style="background:var(--orange)"></span>
+            <span><span class="nm">SME banking enquiry</span><br><span class="ent">Al-Fardan Holding LLC · opened 12 days ago</span></span>
+            <span class="amt">$0.9M</span><span class="pill open">Open</span></div>
+        </div>
+      </div>
+
+      <!-- UK -->
+      <div class="venture cross" data-v="uk">
+        <button class="vhead" aria-expanded="false">
+          <span class="flag">UK</span>
+          <span><span class="vname">Wellspent</span><br><span class="vmeta">Wealth advisory</span></span>
+          <span class="vval"><span class="n">$1.2M</span><br><span class="c">1 product</span></span>
+          <span class="chev">▼</span>
+        </button>
+        <div class="vbody">
+          <div class="prod"><span class="dot" style="background:var(--teal)"></span>
+            <span><span class="nm">Wealth advisory mandate</span><br><span class="ent">Al-Fardan Family Trust · since 2019</span></span>
+            <span class="amt">$1.2M</span><span class="pill">Active</span></div>
+        </div>
+      </div>
+
+      <div class="hidden-note crossonly">
+        <b>2 other ventures hold this client</b>
+        Cape Financial and Wellspent are not visible from this system. Neither is $4.6M in products, or the open enquiry.
+      </div>
+
+      <div class="flag-alert">
+        <span class="ico">!</span>
+        <div>
+          <h4>Cross-venture opportunity</h4>
+          <p>Mobile FX is outperforming in the UAE and is not offered by Cape Financial. This client holds a comparable segment profile in both markets.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pane" id="p2" role="tabpanel" hidden>
+      <p class="secttl">One timeline, every venture</p>
+      <div class="ev"><span class="bar" style="background:var(--orange)"></span>
+        <div><div class="k" style="color:var(--orange)">Sales · Cape Financial</div>
+        <div class="t">SME lending enquiry opened</div><div class="m">12 days ago · relationship value flagged to RM</div></div></div>
+      <div class="ev cross"><span class="bar" style="background:var(--red)"></span>
+        <div><div class="k" style="color:var(--red)">Marketing · Wellspent</div>
+        <div class="t">Suppressed from cold acquisition campaign</div><div class="m">3 weeks ago · existing Tier 1 client of another venture</div></div></div>
+      <div class="ev"><span class="bar" style="background:var(--navy-2)"></span>
+        <div><div class="k" style="color:var(--navy-2)">Service · Emirates</div>
+        <div class="t">Trust distribution query resolved</div><div class="m">6 weeks ago · 4 hrs · routed to trust team</div></div></div>
+      <div class="ev"><span class="bar" style="background:var(--teal)"></span>
+        <div><div class="k" style="color:#00806f">Marketing · Emirates</div>
+        <div class="t">Mobile FX campaign · converted</div><div class="m">2 months ago</div></div></div>
+      <div class="ev cross"><span class="bar" style="background:var(--amber)"></span>
+        <div><div class="k" style="color:#a06a00">Service · Cape Financial</div>
+        <div class="t">Annual trust review completed</div><div class="m">4 months ago</div></div></div>
+      <div class="hidden-note crossonly" style="margin-top:14px">
+        <b>Activity from 2 ventures is not shown</b>
+        The trust review and the campaign suppression happened in systems this record cannot see.
+      </div>
+    </section>
+  </main>
+
+  <!-- RIGHT -->
+  <aside class="card">
+    <h3>Associations</h3>
+    <div class="assoc">
+      <div class="arow"><span class="aic" style="background:var(--amber)">TR</span>
+        <span><span class="n">Al-Fardan Family Trust</span><br><span class="r">Trustee</span></span></div>
+      <div class="arow"><span class="aic" style="background:var(--purple)">LLC</span>
+        <span><span class="n">Al-Fardan Holding LLC</span><br><span class="r">Beneficial owner</span></span></div>
+      <div class="arow"><span class="aic" style="background:var(--navy-2)">SP</span>
+        <span><span class="n">Y. Al-Fardan</span><br><span class="r">Spouse · joint holder</span></span></div>
+      <div class="arow"><span class="aic" style="background:var(--navy-2)">PA</span>
+        <span><span class="n">R. Haddad</span><br><span class="r">Power of attorney</span></span></div>
+      <div class="arow cross"><span class="aic" style="background:var(--teal)">DL</span>
+        <span><span class="n">Deals (2 open)</span><br><span class="r">UAE · South Africa</span></span></div>
+      <div class="arow"><span class="aic" style="background:var(--slate)">TK</span>
+        <span><span class="n">Tickets (2)</span><br><span class="r">Both resolved</span></span></div>
+    </div>
+    <p class="legendnote">No duplicates and no forced parent. One person, linked to entities and to other people, each association labelled with the role it actually is.</p>
+  </aside>
+</div>
+
+<script>
+(function(){
+  // expand / collapse ventures
+  document.querySelectorAll('.vhead').forEach(function(h){
+    h.addEventListener('click', function(){
+      var v = h.closest('.venture');
+      var open = v.classList.toggle('open');
+      h.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  // tabs
+  var tabs = document.querySelectorAll('.tabs button');
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      tabs.forEach(function(o){
+        o.setAttribute('aria-selected','false');
+        document.getElementById(o.dataset.pane).hidden = true;
+      });
+      t.setAttribute('aria-selected','true');
+      document.getElementById(t.dataset.pane).hidden = false;
+    });
+  });
+
+  // view mode
+  var today = document.getElementById('btnToday');
+  var global = document.getElementById('btnGlobal');
+  var note = document.getElementById('modenote');
+  var body = document.body;
+
+  var data = {
+    global: {val:'$14.2M', sub:'Across 3 ventures', prod:'6', psub:'In 3 countries', opp:'2', osub:'$1.4M weighted'},
+    siloed: {val:'$9.6M',  sub:'Emirates only',     prod:'3', psub:'In 1 country',  opp:'0', osub:'None visible'}
+  };
+  function apply(mode){
+    var d = data[mode];
+    document.getElementById('tot-val').textContent  = d.val;
+    document.getElementById('tot-sub').textContent  = d.sub;
+    document.getElementById('tot-prod').textContent = d.prod;
+    document.getElementById('tot-prodsub').textContent = d.psub;
+    document.getElementById('tot-opp').textContent  = d.opp;
+    document.getElementById('tot-oppsub').textContent  = d.osub;
+    var silo = mode === 'siloed';
+    body.classList.toggle('siloed', silo);
+    today.setAttribute('aria-pressed', silo);
+    global.setAttribute('aria-pressed', !silo);
+    note.innerHTML = silo
+      ? '<b>Emirates Venture only.</b> The other two ventures hold this client in systems this one cannot see.'
+      : '<b>All ventures visible.</b> One record, every relationship, every product.';
+  }
+  // AI action buttons
+  var toast = document.createElement('div');
+  toast.className = 'toast';
+  document.body.appendChild(toast);
+  var toastTimer;
+  document.querySelectorAll('[data-toast]').forEach(function(b){
+    b.addEventListener('click', function(){
+      toast.textContent = b.dataset.toast;
+      toast.classList.add('on');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ toast.classList.remove('on'); }, 2600);
+    });
+  });
+
+  today.addEventListener('click', function(){ apply('siloed'); });
+  global.addEventListener('click', function(){ apply('global'); });
+  apply('global');
+})();
+</script>
+</body>
+</html>
